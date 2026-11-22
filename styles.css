@@ -35,18 +35,23 @@ html, body {
 /* ---------- 底层 3D 像素方块矩阵海 & 粒子覆盖层 ---------- */
 #voxelFieldCanvas {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100lvh;
   z-index: 0;
   display: block;
+  pointer-events: none;
 }
 
 #fxOverlayCanvas {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100lvh;
   z-index: 900;
   pointer-events: none;
 }
@@ -424,13 +429,13 @@ body.screen-shake {
   box-shadow: inset 0 0 0 1px rgba(154, 163, 204, 0.2);
 }
 
-/* ---------- 视图层与平滑运镜过渡 ---------- */
+/* ---------- 视图层与平滑运镜过渡（采用原生文档流滚动，兼容移动端丝滑翻页） ---------- */
 .stage-viewport {
   position: relative;
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   z-index: 10;
-  pointer-events: none;
 }
 
 .scene-layer {
@@ -440,38 +445,36 @@ body.screen-shake {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 72px 24px 48px;
+  padding: 76px 24px 64px;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(28px) scale(0.95);
+  transform: translateY(24px) scale(0.96);
   transition:
-    opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.56s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.52s;
-  overflow-y: auto;
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.45s;
 }
 
+/* 激活场景回归原生文档流，由浏览器原生页面滚动接管，彻底消除 fixed 滚动冲突 */
 .scene-layer.active {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   opacity: 1;
   visibility: visible;
-  pointer-events: none;
+  pointer-events: auto;
   transform: translateY(0) scale(1);
 }
 
-.scene-layer.active .interactive-el,
-.scene-layer.active button,
-.scene-layer.active a,
-.scene-layer.active textarea,
-.scene-layer.active .holo-card-3d,
-.scene-layer.active .hero-deck-stack,
-.scene-layer.active .gallery-grid {
-  pointer-events: auto;
-}
-
 .scene-layer.exit-zoom {
+  position: fixed;
+  inset: 0;
   opacity: 0;
-  transform: translateY(-20px) scale(1.06);
+  pointer-events: none;
+  transform: translateY(-18px) scale(1.05);
 }
 
 /* =========================================================================
@@ -558,7 +561,9 @@ body.screen-shake {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  transform-style: preserve-3d;
+  /* Flatten inner elements onto each card's own 3D plane so lower cards' text never pokes through upper cards */
+  transform-style: flat;
+  backface-visibility: hidden;
   box-shadow:
     0 4px 0 #101326,
     0 8px 0 #090b16,
@@ -920,30 +925,6 @@ body.screen-shake {
   font-weight: 800;
 }
 
-.ai-tile .tag-mem {
-  font-size: 10px;
-  color: var(--green);
-}
-
-.ai-tile .tag-nomem {
-  font-size: 10px;
-  color: var(--gold);
-}
-
-.floating-tip {
-  width: 100%;
-  max-width: 620px;
-  text-align: center;
-  font-size: 12px;
-  line-height: 1.6;
-  color: #dce4ff;
-  background: rgba(9, 11, 24, 0.54);
-  backdrop-filter: blur(8px);
-  padding: 11px 18px;
-  margin-bottom: 22px;
-  box-shadow: inset 3px 0 0 var(--cyan);
-}
-
 /* 通用 3D 悬浮像素按钮 */
 .btn-3d {
   border: none;
@@ -1245,13 +1226,15 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
 }
 
 /* 3D 实体闪卡容器：具备真实多 Z 轴分层与实体侧边厚度 */
 .holo-card-3d {
   position: relative;
-  width: min(360px, 84vw);
+  width: min(360px, 82vw);
   aspect-ratio: 9 / 16;
+  flex-shrink: 0;
   transform-style: preserve-3d;
   transition: transform 0.12s ease-out;
   will-change: transform;
@@ -1924,8 +1907,26 @@ textarea:focus {
   }
 }
 
-/* 竖屏窄屏：切换为上下垂直排列，卡堆紧凑置底/居中 */
+/* 竖屏窄屏：流式安全间距，避免闪卡与文字挤压重叠 */
 @media (max-width: 799px) {
+  .scene-layer.active {
+    padding: 72px 16px 64px;
+    justify-content: flex-start;
+  }
+
+  #sceneIpHome.active,
+  #sceneHero.active {
+    justify-content: center;
+  }
+
+  .open-workspace {
+    margin: 0 auto;
+  }
+
+  .result-open-stage {
+    gap: 24px;
+  }
+
   .floating-hud {
     top: 10px;
     left: 12px;

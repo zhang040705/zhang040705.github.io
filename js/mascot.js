@@ -74,7 +74,7 @@ window.IpMascot = (() => {
   function startIdle() {
     clearTimers();
     mode = "idle";
-    if (stageEl) stageEl.classList.remove("sprint-out", "is-fainted");
+    if (stageEl) stageEl.classList.remove("sprint-out");
     setSprite(ACT(0), false);
 
     // 喝冰美式循环待机，间歇冒出低电量或 ZZZ 气泡
@@ -135,8 +135,7 @@ window.IpMascot = (() => {
       setSprite(ACT(4), true); // 吓飞跳起
       showBubble(0, 600);
       revertTimer = setTimeout(() => {
-        if (stageEl) stageEl.classList.add("is-fainted");
-        setSprite(ACT(5), false); // 稳稳平躺在 need. 顶部平台上
+        setSprite(ACT(5), false); // 晕倒躺平
         showBubble(4, 2400); // 404 气泡
         revertTimer = setTimeout(startIdle, 2500);
       }, 420);
@@ -163,7 +162,7 @@ window.IpMascot = (() => {
   }
 
   function resetToHome() {
-    if (stageEl) stageEl.classList.remove("sprint-out", "is-fainted");
+    if (stageEl) stageEl.classList.remove("sprint-out");
     showBubble(null);
     startIdle();
   }

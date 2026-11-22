@@ -98,7 +98,7 @@
 
     const nextEl = document.getElementById(targetId);
     if (nextEl) {
-      nextEl.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: "instant" });
       requestAnimationFrame(() => {
         nextEl.classList.add("active");
       });
@@ -861,7 +861,6 @@
     }
 
     document.getElementById("btnEnterPersonaTest").onclick = () => {
-      VoxelField.setLightHoverTint(null);
       if (IpMascot) IpMascot.triggerSprintOut();
       navigateWithVoxelWave("dark", "sceneHero");
     };

@@ -297,12 +297,28 @@ window.VoxelField = (() => {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
+    let lockedW = 0;
+    let lockedH = 0;
+
     const handleResize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      buildGrid();
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(1, Math.round(rect.width || window.innerWidth));
+      const h = Math.max(1, Math.round(rect.height || window.innerHeight));
+
+      // Lock canvas dimensions against minor mobile address-bar height changes during scroll/pull-to-refresh
+      const orientationChanged = (lockedW >= lockedH) !== (w >= h);
+      const widthChanged = Math.abs(w - lockedW) > 40;
+      const majorHeightChanged = Math.abs(h - lockedH) > 180;
+
+      if (lockedW === 0 || orientationChanged || widthChanged || majorHeightChanged) {
+        lockedW = w;
+        lockedH = h;
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        buildGrid();
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -314,8 +330,13 @@ window.VoxelField = (() => {
       mouseActive = true;
     };
 
-    window.addEventListener("pointermove", (e) => updatePointer(e.clientX, e.clientY));
+    // Only apply magnetic hover & click pulse for mouse/pen pointers; keep touch scrolling completely twitch-free
+    window.addEventListener("pointermove", (e) => {
+      if (e.pointerType === "touch") return;
+      updatePointer(e.clientX, e.clientY);
+    });
     window.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch") return;
       updatePointer(e.clientX, e.clientY);
       pulseWave = 0.85;
     });
