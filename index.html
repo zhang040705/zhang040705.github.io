@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>IDEA is all you need · 个人 IP 像素主页</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="theme-light">
+  <!-- 全屏底层：3D 像素方块矩阵海（主页纯白 + 体素排字 "IDEA is all you need" / 子页深蓝 + 边缘波浪变色） -->
+  <canvas id="voxelFieldCanvas"></canvas>
+  <!-- 前景粒子流层 -->
+  <canvas id="fxOverlayCanvas"></canvas>
+
+  <!-- 悬浮极简顶栏（主页与子页自适应亮/暗配色） -->
+  <header class="floating-hud">
+    <button class="hud-brand-pill" id="btnBrandHome" title="返回个人 IP 主页">
+      <span class="hud-dot"></span>
+      <span id="hudBrandText">IDEA // PERSONAL IP</span>
+    </button>
+    <div class="hud-controls">
+      <button class="hud-icon-btn hidden" id="btnBackToIpHome" title="返回个人 IP 主页">⌂ 返回主页</button>
+      <button class="hud-icon-btn" id="btnToggleSound" title="切换 8-Bit 芯片音效">🔊 音效: 开</button>
+      <button class="hud-icon-btn" id="btnToggleCRT" title="切换 CRT 扫描线">📺 CRT: 开</button>
+    </div>
+  </header>
+
+  <!-- Step 3 -> 4 拟真镭射塑封卡包撕开演出弹窗 -->
+  <div id="unsealOverlay" class="unseal-overlay hidden">
+    <div id="foilPackStage" class="foil-pack-stage">
+      <div class="pack-status-caption" id="packCaption">已封存 · 沿虚线向右滑动撕开卡包</div>
+
+      <div class="foil-pack-wrapper" id="foilPackWrapper">
+        <!-- 内部预览闪卡（撕开后从袋口向上滑出并放大） -->
+        <div class="pack-inner-card" id="packInnerCard">
+          <img id="packInnerArt" alt="人格闪卡" />
+          <div class="pack-inner-code" id="packInnerCode">GOD!</div>
+          <div class="pack-inner-name" id="packInnerName">人类甲方天花板</div>
+        </div>
+
+        <!-- 镭射塑封袋主体（下半部分） -->
+        <div class="foil-pack-body" id="foilPackBody">
+          <div class="foil-pack-sheen"></div>
+          <div class="foil-pack-brand">SILICON ARCHIVE</div>
+          <div class="foil-pack-emblem" id="packEmblem">16-BIT<br/>VERDICT</div>
+          <div class="foil-pack-meta" id="packMeta">SERIES 01 · HOLOGRAPHIC EDITION</div>
+          <div class="foil-crimp-bottom"></div>
+        </div>
+
+        <!-- 镭射塑封袋顶部封口条（撕开时沿虚线分离飞走） -->
+        <div class="foil-pack-top" id="foilPackTop">
+          <div class="foil-crimp-top"></div>
+          <div class="foil-pack-top-label" id="packTopLabel">SEALED BOOSTER PACK</div>
+        </div>
+
+        <!-- 沿虚线从左向右拖动撕开的交互轨道 -->
+        <div class="tear-track" id="tearTrack">
+          <div class="tear-line-bg"></div>
+          <div class="tear-line-progress" id="tearProgress"></div>
+          <div class="tear-handle" id="tearHandle" title="按住向右拖动撕开卡包">✂ ▶</div>
+        </div>
+      </div>
+
+      <button class="link-btn" id="btnQuickTear" style="margin-top: 18px; color: var(--gold);">或点此一键撕开卡包 ▸</button>
+    </div>
+  </div>
+
+  <!-- 主视口：所有场景均通过平滑运镜与 3D 波浪变色过渡 -->
+  <main class="stage-viewport">
+    <!-- ==================== 场景 IP：个人 IP 主页（参考图三行左对齐仿像素巨型宣言 + 数字 IP 小人实时互动） ==================== -->
+    <section id="sceneIpHome" class="scene-layer active">
+      <div class="ip-editorial-stage">
+        <div class="ip-hero-row">
+          <!-- 左侧：三行左对齐现代粗体大字（纯黑极简，无 R 标） -->
+          <div class="ip-typo-block">
+            <h1 class="ip-stacked-headline" aria-label="IDEA is all you need.">
+              <span class="ip-line ip-line-idea" id="ideaWordmark">IDEA</span>
+              <span class="ip-line">is all</span>
+              <span class="ip-line">you need<span class="ip-period">.</span></span>
+            </h1>
+
+            <div class="ip-identity-bar">
+              <span class="ip-identity-name">IDEA</span>
+              <span class="ip-identity-roles">CREATOR / RESEARCHER / PIXEL BUILDER</span>
+            </div>
+
+            <div class="ip-home-actions">
+              <button class="btn-ip-enter" id="btnEnterPersonaTest">
+                <span class="btn-ip-dot"></span>
+                <span>进入《硅基风评鉴定局》人格测试 →</span>
+              </button>
+              <div class="ip-home-hint">滑动鼠标吸附 3D 像素方块 · 点击小人触发互动彩蛋</div>
+            </div>
+          </div>
+
+          <!-- 右侧：紧靠文字边缘站立互动的像素数字 IP 小人 -->
+          <div class="ip-mascot-stage" id="ipMascotStage" title="点我试试！">
+            <img class="ip-emotion-bubble hidden" id="ipEmotionBubble" alt="" />
+            <img class="ip-mascot-sprite" id="ipMascotSprite" alt="个人 IP 像素小人" />
+            <div class="ip-mascot-shadow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 0：硅基风评鉴定局子页 · 左右布局主视觉 ==================== -->
+    <section id="sceneHero" class="scene-layer">
+      <div class="hero-split-layout">
+        <!-- 左侧：立体像素艺术字主标题 + 悬浮启动按钮 -->
+        <div class="hero-left-stage">
+          <div class="hero-eyebrow">SILICON VERDICT ARCHIVE // 20 PIXEL CARDS</div>
+          <h1 class="pixel-art-title">
+            硅基<span class="title-accent">风评</span>鉴定局
+          </h1>
+          <p class="hero-subtitle">
+            别靠自己瞎填性格测试。把审讯令丢给你最常用的 AI，让它翻出长期记忆公开审判你是什么人类甲方。
+          </p>
+
+          <div class="hero-cta-wrap">
+            <button class="btn-hero-launch" id="btnHeroLaunch">▶ 启动 AI 审讯</button>
+            <div class="hero-secondary-links">
+              <button class="link-btn" id="btnHeroGallery">展开 20 张实体闪卡图鉴</button>
+              <button class="link-btn" id="btnHeroManual">15 秒免切 App 手动自测</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：3D 堆叠人格闪卡卡堆（点击平滑飞散铺开进入图鉴） -->
+        <div class="hero-right-stage">
+          <div id="heroDeckStack" class="hero-deck-stack" role="button" tabindex="0" title="点击展开 20 张实体人格闪卡图鉴"></div>
+          <div class="deck-hint">🃏 点击卡堆 · 平滑铺开 20 型实体闪卡图鉴</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 1：开放式 AI 审讯官选择 ==================== -->
+    <section id="sceneStep1" class="scene-layer">
+      <div class="open-workspace">
+        <div class="step-track">
+          <span class="step-node active">01 选审讯官</span>
+          <span class="step-sep">›</span>
+          <span class="step-node">02 激光抠暗号</span>
+          <span class="step-sep">›</span>
+          <span class="step-node">03 测谎坦白局</span>
+          <span class="step-sep">›</span>
+          <span class="step-node">04 3D 闪卡</span>
+        </div>
+
+        <h2 class="open-title">选择你的 AI 审讯官</h2>
+        <p class="open-lead">自带长期记忆的 AI 可直接审讯出结果；暂无记忆时，AI 会先反问 4 道快问快答再出暗号</p>
+
+        <div class="ai-floating-grid" id="aiGrid"></div>
+
+        <div class="action-cluster">
+          <button class="btn-3d btn-gold" id="btnCopyPrompt">📋 一键复制《AI 审讯令》</button>
+          <div class="action-row">
+            <button class="btn-3d btn-cyan" id="btnGoStep2">我已拿到 AI 回复 →</button>
+            <a class="btn-3d btn-ghost" id="btnOpenAI" target="_blank" rel="noopener noreferrer">↗ 直达该 AI 网页</a>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <button class="link-btn" id="btnTogglePrompt">偷看审讯令全文 ▾</button>
+          <button class="link-btn" id="btnStartManual">15 秒手动自测</button>
+          <button class="link-btn" id="btnOpenGallery">查看 20 型图鉴</button>
+        </div>
+        <div class="prompt-preview hidden" id="promptPreview"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 2：无框激光扫描回执解析 ==================== -->
+    <section id="sceneStep2" class="scene-layer">
+      <div class="open-workspace">
+        <div class="step-track">
+          <span class="step-node done">01 选审讯官</span>
+          <span class="step-sep">›</span>
+          <span class="step-node active">02 激光抠暗号</span>
+          <span class="step-sep">›</span>
+          <span class="step-node">03 测谎坦白局</span>
+          <span class="step-sep">›</span>
+          <span class="step-node">04 3D 闪卡</span>
+        </div>
+
+        <h2 class="open-title">粘贴 AI 的整条回复</h2>
+        <p class="open-lead">不用费劲框选最后一行，直接复制整条消息贴进来，激光扫描仪会自动提取 8 维暗号与亲笔毒舌证词</p>
+
+        <div class="scanner-stage" id="scannerStage">
+          <textarea id="aiReplyInput" placeholder="在这里粘贴 AI 的完整回复，或直接粘贴 [CODE: 3-2-2-2-1-3-3-1 | MEM: Y | ROAST: ...]"></textarea>
+          <div class="laser-beam"></div>
+        </div>
+
+        <div class="action-cluster">
+          <div class="action-row">
+            <button class="btn-3d btn-cyan" id="btnReadClipboard">📥 一键读取剪贴板</button>
+            <button class="btn-3d btn-green" id="btnParseManual">⚡ 激光解析暗号</button>
+          </div>
+          <div id="rescueBox" class="hidden">
+            <button class="btn-3d btn-red" style="width: 100%;" id="btnCopyRescue">🚑 AI 漏发暗号？一键复制「催交卷话术」</button>
+          </div>
+        </div>
+
+        <div id="parseStatus" class="hidden"></div>
+
+        <div style="margin-top: 16px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+          <button class="link-btn" id="btnBackStep1">← 返回重选 AI</button>
+          <button class="link-btn" id="btnFillDemo">填入实测演示数据试试</button>
+        </div>
+        <div style="margin-top: 10px; font-size: 11px; color: var(--muted);">🔒 纯本地前端解析，你的 AI 回复绝不上传服务器</div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 M：15 秒手动自测 ==================== -->
+    <section id="sceneManual" class="scene-layer">
+      <div class="open-workspace">
+        <div style="font-size: 12px; color: var(--cyan); font-weight: 700; margin-bottom: 10px;" id="manualProgress">第 1 / 8 题</div>
+        <h2 class="open-title" id="manualQuestion" style="font-size: clamp(18px, 2.5vw, 24px); margin-bottom: 24px;"></h2>
+        <div class="choice-stack" id="manualChoices"></div>
+        <div style="margin-top: 18px;">
+          <button class="link-btn" id="btnCancelManual">← 返回 AI 审讯模式</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 3：测谎仪心电图 · 人类坦白局 ==================== -->
+    <section id="sceneStep3" class="scene-layer">
+      <div class="open-workspace">
+        <div class="step-track">
+          <span class="step-node done">01 选审讯官</span>
+          <span class="step-sep">›</span>
+          <span class="step-node done">02 激光抠暗号</span>
+          <span class="step-sep">›</span>
+          <span class="step-node active">03 测谎坦白局</span>
+          <span class="step-sep">›</span>
+          <span class="step-node">04 3D 闪卡</span>
+        </div>
+
+        <h2 class="open-title">AI 已悄悄交卷 · 人类坦白局</h2>
+
+        <div class="polygraph-strip">
+          <div class="polygraph-header" id="polygraphHeader">
+            <span>POLYGRAPH // 碳基心率测谎仪</span>
+            <span id="ecgBpmText">BPM: 74 · 波形平稳</span>
+          </div>
+          <canvas id="ecgCanvas" width="560" height="54"></canvas>
+        </div>
+
+        <div id="confessQ1" class="choice-stack">
+          <div style="font-size: 15px; font-weight: 800; text-align: center; margin-bottom: 6px;">坦白题 1 / 2：你平时同时在用几个 AI 工具？</div>
+          <button class="choice-pill" data-h1="1" data-stress="1">
+            <span class="choice-key">A</span>
+            <div>
+              <div class="choice-title">专一死忠（基本只用这 1 个）</div>
+              <div class="choice-desc">从一而终，懒得来回切账号</div>
+            </div>
+          </button>
+          <button class="choice-pill" data-h1="2" data-stress="2">
+            <span class="choice-key">B</span>
+            <div>
+              <div class="choice-title">左右逢源（2–3 个换着用）</div>
+              <div class="choice-desc">写代码找一个，聊天查资料找另一个</div>
+            </div>
+          </button>
+          <button class="choice-pill" data-h1="3" data-stress="3">
+            <span class="choice-key">C</span>
+            <div>
+              <div class="choice-title">赛博海王（4 个以上全都要）</div>
+              <div class="choice-desc">ChatGPT / Claude / Gemini / 豆包 / DeepSeek 轮番上阵</div>
+            </div>
+          </button>
+        </div>
+
+        <div id="confessQ2" class="choice-stack hidden">
+          <div style="font-size: 15px; font-weight: 800; text-align: center; margin-bottom: 6px;">坦白题 2 / 2：你每个月给 AI 交多少“房租”？</div>
+          <button class="choice-pill" data-h2="1" data-stress="3">
+            <span class="choice-key">A</span>
+            <div>
+              <div class="choice-title">0 元白嫖到底</div>
+              <div class="choice-desc">绝不花一分钱，额度用完就换家或等明天</div>
+            </div>
+          </button>
+          <button class="choice-pill" data-h2="2" data-stress="1">
+            <span class="choice-key">B</span>
+            <div>
+              <div class="choice-title">轻度付费（1 个会员或少量 API）</div>
+              <div class="choice-desc">挑最顺手的一家充会员，理性消费</div>
+            </div>
+          </button>
+          <button class="choice-pill" data-h2="3" data-stress="2">
+            <span class="choice-key">C</span>
+            <div>
+              <div class="choice-title">重度氪金大佬（多平台 Pro / Cursor 全开）</div>
+              <div class="choice-desc">给硅基生物交的房租比给自己买衣服还贵</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 4：高拟物 3D 实体闪卡展示台 ==================== -->
+    <section id="sceneStep4" class="scene-layer">
+      <div class="result-open-stage">
+        <!-- 实体 3D 闪卡区 -->
+        <div class="card-showcase-zone">
+          <div class="holo-card-3d" id="holoCard3D">
+            <div class="card-thickness-slab"></div>
+            <div class="card-thickness-mid"></div>
+            <img id="posterImg" alt="硅基风评像素海报" />
+            <canvas id="posterCanvas" width="720" height="1280" class="hidden"></canvas>
+            <!-- Z 轴浮起的人物插画视差层 -->
+            <div class="card-parallax-hero-float">
+              <img id="cardParallaxHero" alt="" />
+            </div>
+            <!-- 像素斜纹镭射 + 动态高光层 -->
+            <div class="holo-foil-layer" id="holoFoilLayer"></div>
+            <div class="card-corner-rivets"></div>
+            <div class="stamp-impact-badge" id="stampImpactBadge">当场抓包</div>
+          </div>
+          <div class="save-hint" id="saveHint">✨ 移动鼠标或倾斜手机检视 3D 实体闪卡 · 手机直接长按海报保存</div>
+        </div>
+
+        <!-- 开放式操作与双 AI 对账单区 -->
+        <div class="result-controls-zone" id="resultControlsZone">
+          <div class="result-verdict-banner">
+            <div class="result-verdict-code" id="verdictCode">PROMPT</div>
+            <div class="result-verdict-name" id="verdictName">提示词大祭司</div>
+            <div class="result-verdict-roast" id="verdictRoast">“毒舌证词加载中…”</div>
+          </div>
+
+          <button class="btn-3d btn-gold" id="btnDownloadPoster">💾 下载高清 9:16 像素海报 PNG</button>
+
+          <div id="previewNavBox" class="hidden" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="action-row">
+              <button class="btn-3d btn-cyan" id="btnPreviewPrev">◀ 上一张闪卡</button>
+              <button class="btn-3d btn-cyan" id="btnPreviewNext">下一张闪卡 ▶</button>
+            </div>
+            <button class="btn-3d btn-ghost" id="btnBackToGallery">📚 返回 20 型完整图鉴</button>
+          </div>
+
+          <div class="action-row" id="testActionRow">
+            <button class="btn-3d btn-cyan" id="btnDualTest">⚔️ 换个 AI 再测</button>
+            <button class="btn-3d btn-ghost" id="btnRetest">🔄 重新测试</button>
+          </div>
+
+          <div id="dualCompareSection" class="hidden" style="margin-top: 6px;">
+            <div style="font-size: 13px; font-weight: 800; color: var(--purple); margin-bottom: 8px;">⚔️ 官方认证海王 · 《双 AI 对账单》</div>
+            <div class="compare-grid" id="dualCompareGrid"></div>
+            <button class="btn-3d btn-ghost" id="btnClearHistory" style="width: 100%; margin-top: 10px;">清空对账记录</button>
+          </div>
+
+          <div id="resultGalleryFooter" style="text-align: center;">
+            <button class="link-btn" id="btnResultGallery">查看全部 20 型人格图鉴</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 场景 G：20 型人格全开放图鉴 ==================== -->
+    <section id="sceneGallery" class="scene-layer" style="justify-content: flex-start;">
+      <div class="gallery-open-stage">
+        <h2 class="open-title">20 型人类甲方实体闪卡图鉴</h2>
+        <p class="open-lead">5 张隐藏彩蛋 + 15 张常规甲方，点击任意卡片进入 3D 实体闪卡检视台</p>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <button class="btn-3d btn-ghost" id="btnCloseGallery">← 返回</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">已复制</div>
+
+  <script src="./js/data.js"></script>
+  <script src="./js/sfx.js"></script>
+  <script src="./js/voxel-field.js"></script>
+  <script src="./js/mascot.js"></script>
+  <script src="./js/effects.js"></script>
+  <script src="./js/poster.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
