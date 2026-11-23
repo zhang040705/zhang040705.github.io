@@ -848,22 +848,48 @@
 
   // ---------- 事件绑定 ----------
   function bindEvents() {
-    // 个人 IP 主页：鼠标悬停 IDEA 时稳定触发一次小人灵感欢呼，移开后平滑恢复
-    const ideaEl = document.getElementById("ideaWordmark");
-    if (ideaEl) {
-      ideaEl.addEventListener("pointerenter", () => {
+    const arcadeIsland = document.getElementById("btnEnterPersonaTest");
+    if (arcadeIsland) {
+      arcadeIsland.addEventListener("pointerenter", () => {
         SFX.cardHover();
-        if (IpMascot) IpMascot.enterIdeaHover();
+        VoxelField.setLightHoverTint("#4cc9f0");
+        if (IpMascot) IpMascot.cheerForProject(false);
       });
-      ideaEl.addEventListener("pointerleave", () => {
-        if (IpMascot) IpMascot.leaveIdeaHover();
+      arcadeIsland.addEventListener("pointerleave", () => {
+        VoxelField.setLightHoverTint(null);
+        if (IpMascot) IpMascot.stopCheer();
+      });
+      arcadeIsland.onclick = () => {
+        VoxelField.setLightHoverTint(null);
+        if (IpMascot) IpMascot.triggerSprintOut();
+        setTimeout(() => {
+          navigateWithVoxelWave("dark", "sceneHero");
+        }, 180);
+      };
+      arcadeIsland.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          arcadeIsland.click();
+        }
       });
     }
 
-    document.getElementById("btnEnterPersonaTest").onclick = () => {
-      if (IpMascot) IpMascot.triggerSprintOut();
-      navigateWithVoxelWave("dark", "sceneHero");
-    };
+    const mysteryIsland = document.getElementById("islandMystery");
+    if (mysteryIsland) {
+      mysteryIsland.addEventListener("pointerenter", () => {
+        SFX.blip();
+        VoxelField.setLightHoverTint("#ffd166");
+        if (IpMascot) IpMascot.cheerForProject(true);
+      });
+      mysteryIsland.addEventListener("pointerleave", () => {
+        VoxelField.setLightHoverTint(null);
+        if (IpMascot) IpMascot.stopCheer();
+      });
+      mysteryIsland.onclick = () => {
+        SFX.coinCopy();
+        showToast("🧭 新岛屿正在像素建造中：下一款小游戏 / App / Skill 即将登岛！");
+      };
+    }
 
     document.getElementById("btnBackToIpHome").onclick = () => {
       navigateWithVoxelWave("light", "sceneIpHome");

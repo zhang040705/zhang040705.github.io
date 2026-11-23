@@ -67,39 +67,62 @@
 
   <!-- 主视口：所有场景均通过平滑运镜与 3D 波浪变色过渡 -->
   <main class="stage-viewport">
-    <!-- ==================== 主页：Miles' World ==================== -->
+    <!-- ==================== 主页：Miles' World 2.5D 嵌入式像素群岛世界 ==================== -->
     <section id="sceneIpHome" class="scene-layer active">
-      <div class="ip-editorial-stage">
-        <div class="ip-hero-row">
-          <!-- 左侧：带 3D 厚度的现代粗体主标题 -->
-          <div class="ip-typo-block">
-            <h1 class="ip-stacked-headline" aria-label="Miles' World">
-              <span class="ip-line ip-line-idea" id="ideaWordmark">Miles'</span>
-              <span class="ip-line">World<span class="ip-period">.</span></span>
-            </h1>
+      <div class="archipelago-stage" id="archipelagoStage">
+        <!-- 巨型高精 16-Bit 像素立体标题：正向横平竖直立于主平台正后方，与主平台形成自然遮挡景深 -->
+        <div class="archipelago-backdrop-title">
+          <img class="pixel-monument-title" src="./assets/islands/title_miles_world.png" alt="Miles' World" />
+        </div>
 
-            <div class="ip-identity-bar">
-              <span class="ip-identity-name">MILES</span>
-              <span class="ip-identity-roles">CREATOR / RESEARCHER / PIXEL BUILDER</span>
-            </div>
+        <!-- 岛屿间海面虚线航路（桌面横屏显示） -->
+        <svg class="archipelago-routes" viewBox="0 0 1200 660" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M 330 430 Q 410 470 460 445" class="route-dash" />
+          <path d="M 760 445 Q 840 465 920 420" class="route-dash route-dash-muted" />
+        </svg>
 
-            <div class="ip-home-actions">
-              <button class="btn-ip-enter" id="btnEnterPersonaTest">
-                <span class="btn-ip-dot"></span>
-                <span>进入《硅基风评鉴定局》人格测试 →</span>
-              </button>
-              <div class="ip-home-hint">滑动鼠标吸附 3D 像素方块 · 点击小人触发互动彩蛋</div>
+        <!-- 左侧卫星岛（项目 01）：硅基风评鉴定局（嵌入方块海，不与主岛重叠） -->
+        <div class="island-node island-satellite island-arcade" id="btnEnterPersonaTest" role="button" tabindex="0" title="点击登岛进入《硅基风评鉴定局》">
+          <div class="island-visual-wrap island-embedded-arcade">
+            <img class="island-art" src="./assets/islands/island_arcade.png" alt="硅基风评鉴定局 2.5D 街机岛" />
+          </div>
+          <div class="island-sea-ring"></div>
+          <div class="island-title-sign sign-arcade">
+            <span class="sign-badge">ISLAND 01 · PLAYABLE</span>
+            <div class="sign-name">硅基风评鉴定局</div>
+            <div class="sign-sub">点击登岛 · 20 型 AI 甲方闪卡 →</div>
+          </div>
+        </div>
+
+        <!-- 中央主岛：Miles' Studio（大幅放大、嵌入方块海面、部分遮挡后方巨型像素标题底部） -->
+        <div class="island-node island-main" id="islandMain">
+          <div class="island-visual-wrap island-embedded-main">
+            <img class="island-art" src="./assets/islands/island_main.png" alt="Miles Studio Island" />
+            <!-- 站在主岛前侧宽阔地板上的动态像素小人 -->
+            <div class="island-mascot-anchor" id="ipMascotStage" title="点我互动！">
+              <img class="ip-emotion-bubble hidden" id="ipEmotionBubble" alt="" />
+              <img class="ip-mascot-sprite" id="ipMascotSprite" alt="Miles 像素小人" />
+              <div class="ip-mascot-shadow"></div>
             </div>
           </div>
+          <div class="island-sea-ring ring-main"></div>
+        </div>
 
-          <!-- 右侧：像素小人 -->
-          <div class="ip-mascot-stage" id="ipMascotStage" title="点我试试！">
-            <img class="ip-emotion-bubble hidden" id="ipEmotionBubble" alt="" />
-            <img class="ip-mascot-sprite" id="ipMascotSprite" alt="Miles 像素小人" />
-            <div class="ip-mascot-shadow"></div>
+        <!-- 右侧卫星岛（预留扩展）：未探索迷雾岛（嵌入方块海，独立留白不重叠） -->
+        <div class="island-node island-satellite island-mystery" id="islandMystery" role="button" tabindex="0" title="未探索的新项目岛屿">
+          <div class="island-visual-wrap island-embedded-mystery">
+            <img class="island-art" src="./assets/islands/island_mystery.png" alt="未探索迷雾岛" />
+          </div>
+          <div class="island-sea-ring"></div>
+          <div class="island-title-sign sign-mystery">
+            <span class="sign-badge">ISLAND 02 · LOCKED</span>
+            <div class="sign-name">??? 探索中</div>
+            <div class="sign-sub">新游戏 / App / Skill 筹备中</div>
           </div>
         </div>
       </div>
+
+      <div class="archipelago-footer-hint">点击左侧街机岛登岛体验 · 点击主岛小人触发互动彩蛋</div>
     </section>
 
     <!-- ==================== 场景 0：硅基风评鉴定局子页 · 左右布局主视觉 ==================== -->

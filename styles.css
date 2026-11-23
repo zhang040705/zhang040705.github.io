@@ -108,130 +108,243 @@ body.theme-light .hud-icon-btn:hover {
   box-shadow: 0 6px 18px rgba(15, 20, 42, 0.16), inset 0 0 0 2px #141726;
 }
 
-/* ---------- 个人 IP 主页：参考图三行左对齐巨型仿像素宣言 + 像素小人互动 ---------- */
+/* ---------- 主页：Miles' World 2.5D 嵌入式像素群岛世界 + 巨型像素标题后景遮挡 ---------- */
 #sceneIpHome {
   justify-content: center;
   align-items: center;
-  padding: 72px 28px 48px;
+  padding: 64px 20px 36px;
 }
 
-.ip-editorial-stage {
+.archipelago-stage {
+  position: relative;
   width: 100%;
-  max-width: 980px;
+  max-width: 1220px;
+  height: min(670px, 82vh);
+  min-height: 540px;
+  pointer-events: none;
+}
+
+/* 巨型高精 16-Bit 像素立体大字：正向横平竖直立于主平台正后方（z-index: 3） */
+.archipelago-backdrop-title {
+  position: absolute;
+  left: 50%;
+  top: 2%;
+  transform: translateX(-50%);
+  width: clamp(340px, 74vw, 900px);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  z-index: 3;
   pointer-events: none;
 }
 
-.ip-hero-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
-  gap: clamp(10px, 2.2vw, 28px);
-  position: relative;
-}
-
-.ip-typo-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  pointer-events: none;
-}
-
-.ip-stacked-headline {
-  margin: 0;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: clamp(62px, 10.4vw, 144px);
-  line-height: 0.94;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: #141726;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.ip-line {
+.pixel-monument-title {
+  width: 100%;
+  height: auto;
   display: block;
-  white-space: nowrap;
-  /* 干净利落的 3D 实体挤出厚度与柔和底影 */
-  text-shadow:
-    1px 1px 0 #2b3252,
-    2px 2px 0 #384169,
-    3px 3px 0 #475282,
-    4px 4px 0 #556196,
-    5px 5px 0 #262c4a,
-    6px 6px 0 #121524,
-    12px 16px 26px rgba(18, 21, 36, 0.22);
+  image-rendering: pixelated;
+  filter: drop-shadow(0 16px 26px rgba(18, 22, 42, 0.18));
 }
 
-.ip-line-idea {
-  display: inline-block;
-  pointer-events: auto;
-  cursor: pointer;
-  color: #141726;
+.archipelago-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.ip-period {
-  color: #121524;
+.route-dash {
+  fill: none;
+  stroke: rgba(20, 23, 38, 0.24);
+  stroke-width: 3;
+  stroke-dasharray: 7 10;
+  stroke-linecap: round;
+  animation: routeFlow 18s linear infinite;
 }
 
-/* 参考图底部身份标签行 */
-.ip-identity-bar {
-  margin-top: clamp(22px, 3.2vh, 34px);
-  display: flex;
-  align-items: baseline;
-  gap: 18px;
-  flex-wrap: wrap;
+.route-dash-muted {
+  stroke: rgba(20, 23, 38, 0.14);
 }
 
-.ip-identity-name {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  color: #121524;
-  letter-spacing: 3px;
+@keyframes routeFlow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -180; }
 }
 
-.ip-identity-roles {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(20, 23, 38, 0.56);
-  letter-spacing: 2px;
-}
-
-.ip-home-actions {
-  margin-top: clamp(24px, 4vh, 38px);
+.island-node {
+  position: absolute;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  pointer-events: auto;
+  transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.25, 1.15);
+  will-change: transform;
+}
+
+/* 中央主平台：平底厚砖块微悬于 3D 方块海上，轻微柔和浮动并遮挡后方同轴标题下缘 */
+.island-main {
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  width: clamp(360px, 42vw, 520px);
+  z-index: 8;
+  animation: slabFloatMain 5.2s ease-in-out infinite alternate;
+}
+
+/* 左侧卫星平台（项目 01：硅基风评鉴定局） */
+.island-arcade {
+  left: 2%;
+  bottom: 10%;
+  width: clamp(190px, 20vw, 255px);
+  cursor: pointer;
+  z-index: 9;
+  animation: slabFloatSat 4.6s ease-in-out -1.1s infinite alternate;
+}
+
+/* 右侧卫星平台（项目 02：未探索迷雾平台） */
+.island-mystery {
+  right: 2%;
+  bottom: 12%;
+  width: clamp(180px, 19vw, 235px);
+  cursor: pointer;
+  z-index: 9;
+  animation: slabFloatSat 5.6s ease-in-out -2.4s infinite alternate;
+}
+
+@keyframes slabFloatMain {
+  0% { transform: translateX(-50%) translateY(0px); }
+  100% { transform: translateX(-50%) translateY(-8px); }
+}
+
+@keyframes slabFloatSat {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-9px); }
+}
+
+.island-satellite:hover {
+  animation-play-state: paused;
+  transform: translateY(-14px) scale(1.045);
+  z-index: 20;
+}
+
+.island-visual-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 完整展示平底悬浮砖块平台，不再裁剪 */
+.island-art {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  position: relative;
+  z-index: 3;
+  filter: drop-shadow(0 18px 24px rgba(20, 26, 48, 0.20));
+  transition: filter 0.28s ease;
+}
+
+.island-arcade:hover .island-art {
+  filter: drop-shadow(0 22px 34px rgba(76, 201, 240, 0.42));
+}
+
+.island-mystery:hover .island-art {
+  filter: drop-shadow(0 20px 28px rgba(255, 191, 61, 0.34));
+}
+
+/* 平底悬浮平台下方的柔和悬浮海面投影 */
+.island-sea-ring {
+  width: 74%;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(20, 28, 54, 0.18) 0%, transparent 72%);
+  margin-top: -6px;
+  z-index: 2;
   pointer-events: none;
 }
 
-/* 右侧紧靠文字的像素数字 IP 小人舞台 */
-.ip-mascot-stage {
+.ring-main {
+  width: 78%;
+  height: 22px;
+}
+
+/* 卫星岛下方简洁立牌标题 */
+.island-title-sign {
   position: relative;
-  width: clamp(136px, 18vw, 224px);
-  height: clamp(150px, 20vw, 246px);
-  margin-left: clamp(-24px, -2vw, -10px);
-  margin-bottom: clamp(86px, 11vh, 118px);
+  z-index: 10;
+  margin-top: 8px;
+  text-align: center;
+  padding: 8px 14px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.sign-arcade {
+  background: rgba(16, 20, 42, 0.92);
+  border: 2px solid var(--cyan);
+  color: #fff;
+  box-shadow: 0 4px 0 #090b18, 0 10px 22px rgba(15, 20, 42, 0.24);
+}
+
+.island-arcade:hover .sign-arcade {
+  border-color: var(--gold);
+  box-shadow: 0 6px 0 #090b18, 0 0 24px rgba(76, 201, 240, 0.42);
+}
+
+.sign-mystery {
+  background: rgba(255, 255, 255, 0.88);
+  border: 2px dashed rgba(20, 23, 38, 0.32);
+  color: #1c2138;
+  box-shadow: 0 4px 0 rgba(20, 23, 38, 0.18);
+}
+
+.sign-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: var(--gold);
+  margin-bottom: 2px;
+}
+
+.sign-mystery .sign-badge {
+  color: #7a83a8;
+}
+
+.sign-name {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.sign-sub {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #b7c6ff;
+}
+
+.sign-mystery .sign-sub {
+  color: #6b7399;
+}
+
+/* 站在主平台中央宽阔地砖上的像素小人 */
+.island-mascot-anchor {
+  position: absolute;
+  left: 48%;
+  top: 49%;
+  width: 24%;
+  aspect-ratio: 1 / 1.08;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  pointer-events: auto;
   cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.55s cubic-bezier(0.35, 0, 0.2, 1), opacity 0.4s ease;
-  will-change: transform;
-}
-
-.ip-mascot-stage.sprint-out {
-  transform: translateX(64vw) translateY(-10px) scale(1.06);
-  opacity: 0;
+  z-index: 9;
 }
 
 .ip-mascot-sprite {
@@ -243,105 +356,68 @@ body.theme-light .hud-icon-btn:hover {
   position: relative;
   z-index: 3;
   transform-origin: bottom center;
-  filter: drop-shadow(0 10px 16px rgba(15, 20, 42, 0.22));
+  filter: drop-shadow(0 5px 8px rgba(15, 20, 42, 0.24));
   transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.35);
 }
 
-.ip-mascot-stage:hover .ip-mascot-sprite {
-  transform: translateY(-4px) scale(1.04);
+.island-mascot-anchor:hover .ip-mascot-sprite {
+  transform: translateY(-4px) scale(1.06);
 }
 
 .ip-mascot-sprite.bounce-pop {
-  animation: mascotPop 0.38s cubic-bezier(0.2, 0.95, 0.3, 1.35);
+  animation: mascotPop 0.36s cubic-bezier(0.2, 0.95, 0.3, 1.35);
 }
 
 @keyframes mascotPop {
   0% { transform: scale(1, 1) translateY(0); }
-  35% { transform: scale(1.12, 0.88) translateY(4px); }
-  65% { transform: scale(0.94, 1.10) translateY(-16px); }
+  35% { transform: scale(1.12, 0.88) translateY(3px); }
+  65% { transform: scale(0.94, 1.08) translateY(-12px); }
   100% { transform: scale(1, 1) translateY(0); }
 }
 
 .ip-mascot-shadow {
-  width: 64%;
-  height: 14px;
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  width: 66%;
+  height: 9px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(18, 21, 36, 0.28) 0%, transparent 72%);
-  margin-top: -10px;
+  background: radial-gradient(ellipse at center, rgba(18, 21, 36, 0.32) 0%, transparent 72%);
+  transform: translateX(-50%);
   z-index: 1;
+  pointer-events: none;
 }
 
-/* 小人头顶像素情绪气泡 */
 .ip-emotion-bubble {
   position: absolute;
-  top: -18px;
-  right: 8px;
-  width: clamp(46px, 5.8vw, 68px);
+  top: -34%;
+  right: -12%;
+  width: 52%;
   height: auto;
   image-rendering: pixelated;
-  z-index: 6;
+  z-index: 12;
   pointer-events: none;
-  filter: drop-shadow(0 6px 12px rgba(15, 20, 42, 0.2));
-  animation: bubbleFloatIn 0.32s cubic-bezier(0.2, 0.95, 0.3, 1.35);
+  filter: drop-shadow(0 5px 10px rgba(15, 20, 42, 0.22));
+  animation: bubbleFloatIn 0.28s cubic-bezier(0.2, 0.95, 0.3, 1.35);
+}
+
+@keyframes bubbleFloatIn {
+  0% { transform: translateY(12px) scale(0.5); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.archipelago-footer-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(20, 23, 38, 0.56);
+  letter-spacing: 0.8px;
+  text-align: center;
 }
 
 @keyframes bubbleFloatIn {
   0% { transform: translateY(14px) scale(0.5); opacity: 0; }
   100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-.btn-ip-enter {
-  pointer-events: auto;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: clamp(14px, 1.5vw, 17px);
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: #ffffff;
-  background: #141726;
-  padding: 17px 34px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow:
-    0 5px 0 #3a446e,
-    0 9px 0 #090b14,
-    0 18px 40px rgba(20, 23, 38, 0.24);
-  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.3), box-shadow 0.16s ease, background 0.2s;
-}
-
-.btn-ip-enter:hover {
-  background: #1c223b;
-  transform: translateY(-5px) scale(1.02);
-  box-shadow:
-    0 7px 0 #3a446e,
-    0 12px 0 #090b14,
-    0 24px 48px rgba(20, 23, 38, 0.32);
-}
-
-.btn-ip-enter:active {
-  transform: translateY(4px);
-  box-shadow:
-    0 2px 0 #3a446e,
-    0 4px 0 #090b14,
-    0 10px 22px rgba(20, 23, 38, 0.2);
-}
-
-.btn-ip-dot {
-  width: 9px;
-  height: 9px;
-  background: #ff5e6e;
-  box-shadow: 0 0 10px #ff5e6e;
-  display: inline-block;
-}
-
-.ip-home-hint {
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(20, 23, 38, 0.62);
-  letter-spacing: 0.8px;
-  text-align: center;
 }
 
 body.screen-shake {
@@ -1947,37 +2023,56 @@ textarea:focus {
     letter-spacing: 0.5px;
   }
 
-  .ip-hero-row {
+  #sceneIpHome.active {
+    justify-content: flex-start;
+    padding-top: 76px;
+  }
+
+  .archipelago-stage {
+    height: auto;
+    min-height: 0;
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
+    align-items: center;
+    gap: 24px;
   }
 
-  .ip-stacked-headline {
-    font-size: clamp(48px, 14.5vw, 76px);
+  .archipelago-backdrop-title {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: min(92vw, 420px);
+    margin: 4px 0 -16px;
   }
 
-  .ip-mascot-stage {
-    position: absolute;
-    right: -6px;
-    top: -12px;
-    margin: 0;
-    width: 112px;
-    height: 122px;
+  .archipelago-routes {
+    display: none;
   }
 
-  .ip-identity-bar {
-    gap: 10px;
+  .island-node {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    transform: none;
+    animation: none;
   }
 
-  .ip-identity-roles {
-    font-size: 10px;
-    letter-spacing: 1px;
+  .island-main {
+    order: 1;
+    width: min(360px, 90vw);
   }
 
-  .btn-ip-enter {
-    padding: 14px 22px;
-    font-size: 13px;
+  .island-arcade {
+    order: 2;
+    width: min(240px, 68vw);
+  }
+
+  .island-mystery {
+    order: 3;
+    width: min(220px, 64vw);
   }
 
   .hero-split-layout {

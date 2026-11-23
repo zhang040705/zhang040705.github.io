@@ -1,5 +1,5 @@
 // =========================================================================
-// mascot.js · 个人 IP 像素小人帧动画状态机（冰美式待机、IDEA 灵感爆发、点击彩蛋、切页冲刺）
+// mascot.js · 主岛像素小人互动状态机（站在 Miles' Studio 2.5D 主岛前侧空地）
 // =========================================================================
 window.IpMascot = (() => {
   const BASE_DIR = "./assets/mascot/";
@@ -7,20 +7,14 @@ window.IpMascot = (() => {
   const RUN = (n) => `${BASE_DIR}char_grad_run_frames/char_grad_run_0${n}.png`;
   const BUB = (n) => `${BASE_DIR}ui_emotion_bubbles_frames/ui_emotion_bubbles_0${n}.png`;
 
-  // Actions frames:
-  // 0: 拿冰美式待机, 1: 吸冰美式, 2: 举冰美式两眼放光, 3: 头顶笔记本挡灾,
-  // 4: 吓飞跳起, 5: 晕倒躺平, 6: 微笑挥手, 7: 双手高举欢呼
-  // Bubbles frames:
-  // 0: ?, 1: !, 2: 汗滴, 3: 低电量, 4: 404, 5: 怒气, 6: 灵感闪电, 7: ZZZ
-
   let stageEl = null;
   let spriteEl = null;
   let bubbleEl = null;
 
-  let mode = "idle"; // idle | inspired | wave | shield | faint | sprint
+  let mode = "idle"; // idle | emote | cheer | sprint
   let clickCycle = 0;
   let idleTick = 0;
-  let frameTimer = null;
+  let idleTimer = null;
   let revertTimer = null;
   let bubbleTimer = null;
 
@@ -44,125 +38,111 @@ window.IpMascot = (() => {
     }
   }
 
-  function showBubble(bubbleIdx, durationMs = 2200) {
+  function showBubble(idx, durationMs = 2000) {
     if (!bubbleEl) return;
     clearTimeout(bubbleTimer);
-    if (bubbleIdx === null || bubbleIdx === undefined) {
+    if (idx === null || idx === undefined) {
       bubbleEl.classList.add("hidden");
       return;
     }
-    bubbleEl.src = BUB(bubbleIdx);
+    bubbleEl.src = BUB(idx);
     bubbleEl.classList.remove("hidden");
-    // Re-trigger pop-in animation
     bubbleEl.style.animation = "none";
     void bubbleEl.offsetWidth;
     bubbleEl.style.animation = "";
     if (durationMs > 0) {
-      bubbleTimer = setTimeout(() => {
-        bubbleEl.classList.add("hidden");
-      }, durationMs);
+      bubbleTimer = setTimeout(() => bubbleEl.classList.add("hidden"), durationMs);
     }
   }
 
   function clearTimers() {
-    clearInterval(frameTimer);
+    clearInterval(idleTimer);
     clearTimeout(revertTimer);
-    frameTimer = null;
+    idleTimer = null;
     revertTimer = null;
   }
 
   function startIdle() {
     clearTimers();
     mode = "idle";
-    if (stageEl) stageEl.classList.remove("sprint-out");
     setSprite(ACT(0), false);
-
-    // 喝冰美式循环待机，间歇冒出低电量或 ZZZ 气泡
     idleTick = 0;
-    frameTimer = setInterval(() => {
+    idleTimer = setInterval(() => {
       if (mode !== "idle") return;
       idleTick++;
-      const sipping = idleTick % 3 === 0;
-      setSprite(sipping ? ACT(1) : ACT(0), false);
+      setSprite(idleTick % 3 === 0 ? ACT(1) : ACT(0), false);
       if (idleTick % 7 === 0) {
         showBubble(idleTick % 14 === 0 ? 7 : 3, 2100);
       }
     }, 950);
   }
 
-  // 鼠标进入 IDEA 整体区域：稳定切入一次灵感欢呼状态，不重复抖动抽搐
-  function enterIdeaHover() {
-    if (mode === "sprint" || mode === "inspired") return;
-    clearTimers();
-    mode = "inspired";
-    setSprite(ACT(7), true);
-    showBubble(6, 0); // 悬停期间常驻金色灵感闪电，不反复闪烁
-  }
-
-  function leaveIdeaHover() {
-    if (mode !== "inspired") return;
-    clearTimers();
-    revertTimer = setTimeout(() => {
-      if (mode === "inspired") {
-        showBubble(null);
-        startIdle();
-      }
-    }, 550);
-  }
-
-  // 点击小人触发彩蛋状态循环：挥手 -> 顶笔记本防身 -> 吓飞晕倒404 -> 爬起继续喝咖啡
-  function handleMascotClick() {
+  function handleMascotClick(e) {
+    e.stopPropagation();
     if (mode === "sprint") return;
     clearTimers();
-    const step = clickCycle % 3;
+    const step = clickCycle % 4;
     clickCycle++;
 
     if (step === 0) {
-      mode = "wave";
+      mode = "emote";
       window.SFX.coinCopy();
-      setSprite(ACT(6), true);
-      showBubble(1, 2000); // 感叹号
-      revertTimer = setTimeout(startIdle, 2000);
+      setSprite(ACT(6), true); // 微笑挥手
+      showBubble(1, 1900);
+      revertTimer = setTimeout(startIdle, 1900);
     } else if (step === 1) {
-      mode = "shield";
+      mode = "emote";
+      window.SFX.cardHover();
+      setSprite(ACT(7), true); // 双手高举欢呼
+      showBubble(6, 1900); // 金色灵感闪电
+      revertTimer = setTimeout(startIdle, 1900);
+    } else if (step === 2) {
+      mode = "emote";
       window.SFX.blip();
-      setSprite(ACT(3), true);
-      showBubble(2, 2100); // 汗滴
-      revertTimer = setTimeout(startIdle, 2100);
+      setSprite(ACT(3), true); // 顶笔记本防身
+      showBubble(2, 2000);
+      revertTimer = setTimeout(startIdle, 2000);
     } else {
-      mode = "faint";
+      mode = "emote";
       window.SFX.alarm();
-      setSprite(ACT(4), true); // 吓飞跳起
-      showBubble(0, 600);
+      setSprite(ACT(4), true);
+      showBubble(0, 500);
       revertTimer = setTimeout(() => {
-        setSprite(ACT(5), false); // 晕倒躺平
-        showBubble(4, 2400); // 404 气泡
-        revertTimer = setTimeout(startIdle, 2500);
-      }, 420);
+        setSprite(ACT(5), false); // 晕倒躺平在主岛空地上
+        showBubble(4, 2200);
+        revertTimer = setTimeout(startIdle, 2300);
+      }, 380);
     }
   }
 
-  // 点击跳转人格测试子页时：小人加速冲刺跑出屏幕
+  // 鼠标移到项目小岛时，主岛小人开心欢呼 + 亮出灵感闪电指引
+  function cheerForProject(isMystery = false) {
+    if (mode === "sprint" || mode === "cheer") return;
+    clearTimers();
+    mode = "cheer";
+    setSprite(isMystery ? ACT(2) : ACT(7), true);
+    showBubble(isMystery ? 0 : 6, 0);
+  }
+
+  function stopCheer() {
+    if (mode !== "cheer") return;
+    clearTimers();
+    revertTimer = setTimeout(() => {
+      if (mode === "cheer") {
+        showBubble(null);
+        startIdle();
+      }
+    }, 450);
+  }
+
   function triggerSprintOut() {
     clearTimers();
     mode = "sprint";
-    showBubble(1, 900);
-    let f = 0;
-    setSprite(RUN(0), false);
-    frameTimer = setInterval(() => {
-      f = (f + 1) % 4;
-      setSprite(RUN(f), false);
-    }, 90);
-
-    if (stageEl) {
-      requestAnimationFrame(() => {
-        stageEl.classList.add("sprint-out");
-      });
-    }
+    setSprite(ACT(7), true);
+    showBubble(6, 900);
   }
 
   function resetToHome() {
-    if (stageEl) stageEl.classList.remove("sprint-out");
     showBubble(null);
     startIdle();
   }
@@ -175,14 +155,13 @@ window.IpMascot = (() => {
 
     preload();
     startIdle();
-
     stageEl.addEventListener("click", handleMascotClick);
   }
 
   return {
     init,
-    enterIdeaHover,
-    leaveIdeaHover,
+    cheerForProject,
+    stopCheer,
     triggerSprintOut,
     resetToHome
   };
