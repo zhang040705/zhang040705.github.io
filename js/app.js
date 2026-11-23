@@ -114,7 +114,7 @@
     const brandText = document.getElementById("hudBrandText");
     const backBtn = document.getElementById("btnBackToIpHome");
     if (brandText) {
-      brandText.textContent = isIpHome ? "IDEA // PERSONAL IP" : "16-BIT 硅基风评鉴定局";
+      brandText.textContent = isIpHome ? "MILES' WORLD" : "16-BIT 硅基风评鉴定局";
     }
     if (backBtn) {
       backBtn.classList.toggle("hidden", isIpHome);

@@ -305,7 +305,7 @@ window.PosterRenderer = (() => {
     ctx.font = "bold 17px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("研究生像素闯关 IP · 硅基风评鉴定局 · 纯本地解析", W / 2, 1236);
+    ctx.fillText("Miles' World · 硅基风评鉴定局 · 纯本地解析", W / 2, 1236);
 
     // Update 3D Card Parallax Floating Illustration & Theme Accent
     const holoCard = document.getElementById("holoCard3D");

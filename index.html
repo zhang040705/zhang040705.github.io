@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>IDEA is all you need · 个人 IP 像素主页</title>
+  <title>Miles' World</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body class="theme-light">
-  <!-- 全屏底层：3D 像素方块矩阵海（主页纯白 + 体素排字 "IDEA is all you need" / 子页深蓝 + 边缘波浪变色） -->
+  <!-- 全屏底层：3D 像素方块矩阵海 -->
   <canvas id="voxelFieldCanvas"></canvas>
   <!-- 前景粒子流层 -->
   <canvas id="fxOverlayCanvas"></canvas>
 
   <!-- 悬浮极简顶栏（主页与子页自适应亮/暗配色） -->
   <header class="floating-hud">
-    <button class="hud-brand-pill" id="btnBrandHome" title="返回个人 IP 主页">
+    <button class="hud-brand-pill" id="btnBrandHome" title="返回 Miles' World 主页">
       <span class="hud-dot"></span>
-      <span id="hudBrandText">IDEA // PERSONAL IP</span>
+      <span id="hudBrandText">MILES' WORLD</span>
     </button>
     <div class="hud-controls">
-      <button class="hud-icon-btn hidden" id="btnBackToIpHome" title="返回个人 IP 主页">⌂ 返回主页</button>
+      <button class="hud-icon-btn hidden" id="btnBackToIpHome" title="返回 Miles' World 主页">⌂ 返回主页</button>
       <button class="hud-icon-btn" id="btnToggleSound" title="切换 8-Bit 芯片音效">🔊 音效: 开</button>
       <button class="hud-icon-btn" id="btnToggleCRT" title="切换 CRT 扫描线">📺 CRT: 开</button>
     </div>
@@ -67,20 +67,19 @@
 
   <!-- 主视口：所有场景均通过平滑运镜与 3D 波浪变色过渡 -->
   <main class="stage-viewport">
-    <!-- ==================== 场景 IP：个人 IP 主页（参考图三行左对齐仿像素巨型宣言 + 数字 IP 小人实时互动） ==================== -->
+    <!-- ==================== 主页：Miles' World ==================== -->
     <section id="sceneIpHome" class="scene-layer active">
       <div class="ip-editorial-stage">
         <div class="ip-hero-row">
-          <!-- 左侧：三行左对齐现代粗体大字（纯黑极简，无 R 标） -->
+          <!-- 左侧：带 3D 厚度的现代粗体主标题 -->
           <div class="ip-typo-block">
-            <h1 class="ip-stacked-headline" aria-label="IDEA is all you need.">
-              <span class="ip-line ip-line-idea" id="ideaWordmark">IDEA</span>
-              <span class="ip-line">is all</span>
-              <span class="ip-line">you need<span class="ip-period">.</span></span>
+            <h1 class="ip-stacked-headline" aria-label="Miles' World">
+              <span class="ip-line ip-line-idea" id="ideaWordmark">Miles'</span>
+              <span class="ip-line">World<span class="ip-period">.</span></span>
             </h1>
 
             <div class="ip-identity-bar">
-              <span class="ip-identity-name">IDEA</span>
+              <span class="ip-identity-name">MILES</span>
               <span class="ip-identity-roles">CREATOR / RESEARCHER / PIXEL BUILDER</span>
             </div>
 
@@ -93,10 +92,10 @@
             </div>
           </div>
 
-          <!-- 右侧：紧靠文字边缘站立互动的像素数字 IP 小人 -->
+          <!-- 右侧：像素小人 -->
           <div class="ip-mascot-stage" id="ipMascotStage" title="点我试试！">
             <img class="ip-emotion-bubble hidden" id="ipEmotionBubble" alt="" />
-            <img class="ip-mascot-sprite" id="ipMascotSprite" alt="个人 IP 像素小人" />
+            <img class="ip-mascot-sprite" id="ipMascotSprite" alt="Miles 像素小人" />
             <div class="ip-mascot-shadow"></div>
           </div>
         </div>
